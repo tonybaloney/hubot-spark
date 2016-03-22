@@ -109,19 +109,16 @@ class SparkRealtime extends EventEmitter
  
   send: (user, message, room) ->
     @robot.logger.debug "Sending message"
-    if user
-      @reply user, message
-    else
-      @room_ids.forEach (room_id) =>
-        @robot.logger.info "send message to room #{room_id} with text #{message}"
-        spark.sendMessage
-          roomId: room_id
-          text: message
+    @room_ids.forEach (room_id) =>
+      @robot.logger.info "send message to room #{room_id} with text #{message}"
+      @spark.sendMessage
+        roomId: room_id
+        text: message
  
   reply: (user, message) ->
-    @robot.logger.debug "Replying to message"
+    @robot.logger.debug "Replying to message for #{user}"
     if user
       @robot.logger.info "reply message to #{user} with text #{message}"
-      spark.sendMessage
+      @spark.sendMessage
         text: message
         toPersonEmail: user
