@@ -52,7 +52,7 @@ class SparkAdapter extends Adapter
      rooms      : process.env.HUBOT_SPARK_ROOMS
     bot = new SparkRealtime(options, @robot)
     @robot.logger.debug "Created bot, setting up listeners"
-    bot.listen (messages, room_id) ->
+    bot.listen (messages, room_id) =>
       @robot.logger.debug "Fired listener callback for #{room_id}"
       messages.forEach (message) =>
         # checking message is received from valid group
@@ -101,10 +101,10 @@ class SparkRealtime extends EventEmitter
       listMsges = @spark.listItemEvt(
         item: 'messages'
         roomId: room_id
-        max: '15')
+        max: '1')
       @robot.logger.debug "Set callback for #{room_id}"
       listMsges.on 'messages', (msges) ->
-        callback msges room_id
+        callback msges, room_id
     @robot.logger.debug "Finished listener callbacks"
  
   send: (user, message, room) ->
