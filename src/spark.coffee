@@ -51,8 +51,9 @@ class SparkAdapter extends Adapter
      access_token: process.env.HUBOT_SPARK_ACCESS_TOKEN
      rooms      : process.env.HUBOT_SPARK_ROOMS
     bot = new SparkRealtime(options, @robot)
- 
+    @robot.logger.debug "Created bot, setting up listeners"
     bot.listen (messages, room_id) ->
+      @robot.logger.debug "Fired listener callback for #{room_id}"
       messages.forEach (message) =>
         # checking message is received from valid group
         if room_id in bot.room_ids
@@ -62,9 +63,10 @@ class SparkAdapter extends Adapter
           @robot.receive new TextMessage user_name, text
         else
           @robot.logger.info "received #{text} from #{room_id} but not a room we listen to."
- 
+    @robot.logger.debug "Done with custom bot logic"
     @bot = bot
     @emit 'connected'
+    @robot.logger.debug "Ready!"
 
 exports.use = (robot) ->
   new SparkAdapter robot
@@ -75,28 +77,39 @@ class SparkRealtime extends EventEmitter
   constructor: (options, robot) ->
     if options.access_token?
       @robot = robot
-      @spark = Spark
-        uri: options.api_uri
-        access_token: options.access_token
+      try
+        @robot.logger.debug "Trying connection"
+        @spark = Spark
+          uri: options.api_uri
+          access_token: options.access_token
+        @robot.logger.debug "Created connection instance to spark"
+      catch e
+        throw new Error "Failed to connect #{e.message}"
       @room_ids = []
       options.rooms.split(',').forEach (room_id) =>
         @room_ids.push room_id
+      @robot.logger.debug "Completed adding rooms to list"
      else
        throw new Error "Not enough parameters provided. I need an access token"
  
   ## Spark API call methods
   listen: (callback) ->
+    @robot.logger.debug "Creating callbacks"
     # Create a callback hook for each room
     @room_ids.forEach (room_id) =>
+      @robot.logger.debug "Creating callback for #{room_id}"
       listMsges = @spark.listItemEvt(
         item: 'messages'
         roomId: room_id
         max: '15')
+      @robot.logger.debug "Set callback for #{room_id}"
       listMsges.on 'messages', (msges) ->
         @robot.logger.debug "Caught message"
         callback msges room_id
+    @robot.logger.debug "Finished listener callbacks"
  
   send: (user, message, room) ->
+    @robot.logger.debug "Sending message"
     if user
       @reply user, message
     else
@@ -107,6 +120,7 @@ class SparkRealtime extends EventEmitter
           text: message
  
   reply: (user, message) ->
+    @robot.logger.debug "Replying to message"
     if user
       @robot.logger.info "reply message to #{user} with text #{message}"
       spark.sendMessage

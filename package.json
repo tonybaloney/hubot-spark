@@ -17,9 +17,10 @@
     "url": "git://github.com/tonybaloney/hubot-spark.git"
   },
   "dependencies": {
+    "csco-spark": "3.1.0",
     "hubot": ">=2.3.0",
-    "request": "2.9.3",
-    "csco-spark": "3.1.0"
+    "hubot-exit": "^1.0.0",
+    "request": "2.9.3"
   },
   "devDependencies": {
     "coffee-script": "1.1.3"
