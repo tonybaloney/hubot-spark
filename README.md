@@ -4,13 +4,21 @@
 
 ## Description
 
-This is the [Cisco Spark](http://www.yammer.com) adapter for [Hubot](https://github.com/github/hubot) that allows communication in Spark channels.
+This is the [Cisco Spark](https://developer.ciscospark.com) adapter for [Hubot](https://github.com/github/hubot) that allows communication in Spark channels.
 
 ## Installation
 
 * Install dependencies with `npm install`
 * Set environment variables (below)
 * Run hubot with `bin/hubot -a spark -n name`
+
+## Configuration
+
+The following environment variables are required for connecting : 
+
+* `HUBOT_SPARK_API_URI` - (optional, defaults to "https://api.ciscospark.com/v1")
+* `HUBOT_SPARK_ACCESS_TOKEN` - Your API access token, generated from the Cisco Spark developer console
+* `HUBOT_SPARK_ROOMS` - A list of room IDs that you want your bot to listen to, seperated with commas.
 
 ## Thanks
 
