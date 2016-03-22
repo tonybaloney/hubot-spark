@@ -72,7 +72,7 @@ class SparkRealtime extends EventEmitter
       @spark = Spark
         uri: options.api_uri
         access_token: options.access_token
-     
+      @room_ids = []
       options.rooms.split(',').forEach (room_id) =>
         @room_ids.push room_id
      else
