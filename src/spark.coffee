@@ -50,7 +50,7 @@ class SparkAdapter extends Adapter
     bot = new SparkRealtime(options)
  
     bot.listen (messages, room_id) ->
-      data.forEach (message) =>
+      messages.forEach (message) =>
         # checking message is received from valid group
         if room_id in bot.room_ids
           text = message.text
@@ -73,7 +73,7 @@ class SparkRealtime extends EventEmitter
         uri: options.api_uri
         access_token: options.access_token
      
-      options.rooms.split(',').foreach(room_id) =>
+      options.rooms.split(',').forEach (room_id) =>
         @room_ids.push room_id
      else
        throw new Error "Not enough parameters provided. I need an access token"
@@ -93,7 +93,7 @@ class SparkRealtime extends EventEmitter
     if user
       @reply user, message
     else
-      room_ids.forEach (room_id) =>
+      @room_ids.forEach (room_id) =>
         console.log "send message to room #{room_id} with text #{message}"
         spark.sendMessage
           roomId: room_id
@@ -103,6 +103,5 @@ class SparkRealtime extends EventEmitter
     if user
       console.log "reply message to #{user} with text #{message}"
       spark.sendMessage
-        roomId: room_id
         text: message
         toPersonEmail: user
