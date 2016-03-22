@@ -69,7 +69,7 @@ class SparkRealtime extends EventEmitter
   room_ids = []
   constructor: (options) ->
     if options.access_token?
-      @spark = new Spark
+      @spark = Spark
         uri: options.api_uri
         access_token: options.access_token
      
