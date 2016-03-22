@@ -23,6 +23,9 @@ EventEmitter = require('events').EventEmitter
 Spark       = require('csco-spark')
 
 class SparkAdapter extends Adapter
+  constructor: (robot) ->
+    super
+
   send: (envelope, strings...) ->
     user = if envelope.user then envelope.user else envelope
     strings.forEach (str) =>
@@ -47,7 +50,7 @@ class SparkAdapter extends Adapter
      api_uri: process.env.HUBOT_SPARK_API_URI or "https://api.ciscospark.com/v1"
      access_token: process.env.HUBOT_SPARK_ACCESS_TOKEN
      rooms      : process.env.HUBOT_SPARK_ROOMS
-    bot = new SparkRealtime(options)
+    bot = new SparkRealtime(options, @robot)
  
     bot.listen (messages, room_id) ->
       messages.forEach (message) =>
@@ -55,11 +58,13 @@ class SparkAdapter extends Adapter
         if room_id in bot.room_ids
           text = message.text
           user_name = message.personEmail
-          console.log "received #{text} from #{user_name}"
-          self.receive new TextMessage user_name, text
+          @robot.logger.info "received #{text} from #{user_name}"
+          @robot.receive new TextMessage user_name, text
+        else
+          @robot.logger.info "received #{text} from #{room_id} but not a room we listen to."
  
     @bot = bot
-    self.emit 'connected'
+    @emit 'connected'
 
 exports.use = (robot) ->
   new SparkAdapter robot
@@ -67,8 +72,9 @@ exports.use = (robot) ->
 class SparkRealtime extends EventEmitter
   self = @
   room_ids = []
-  constructor: (options) ->
+  constructor: (options, robot) ->
     if options.access_token?
+      @robot = robot
       @spark = Spark
         uri: options.api_uri
         access_token: options.access_token
@@ -87,6 +93,7 @@ class SparkRealtime extends EventEmitter
         roomId: room_id
         max: '15')
       listMsges.on 'messages', (msges) ->
+        @robot.logger.debug "Caught message"
         callback msges room_id
  
   send: (user, message, room) ->
@@ -94,14 +101,14 @@ class SparkRealtime extends EventEmitter
       @reply user, message
     else
       @room_ids.forEach (room_id) =>
-        console.log "send message to room #{room_id} with text #{message}"
+        @robot.logger.info "send message to room #{room_id} with text #{message}"
         spark.sendMessage
           roomId: room_id
           text: message
  
   reply: (user, message) ->
     if user
-      console.log "reply message to #{user} with text #{message}"
+      @robot.logger.info "reply message to #{user} with text #{message}"
       spark.sendMessage
         text: message
         toPersonEmail: user
