@@ -1,6 +1,6 @@
 {
   "name": "hubot-spark",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "author": "Anthony Shaw",
   "keywords": [
     "github hubot cisco spark adapter"
