@@ -66,7 +66,6 @@ class SparkAdapter extends Adapter
     @robot.logger.debug "Done with custom bot logic"
     @bot = bot
     @emit 'connected'
-    @robot.logger.debug "Ready!"
 
 exports.use = (robot) ->
   new SparkAdapter robot
@@ -78,16 +77,17 @@ class SparkRealtime extends EventEmitter
     if options.access_token?
       @robot = robot
       try
-        @robot.logger.debug "Trying connection"
+        @robot.logger.debug "Trying connection to #{options.api_uri}"
         @spark = Spark
           uri: options.api_uri
-          access_token: options.access_token
+          token: options.access_token
         @robot.logger.debug "Created connection instance to spark"
       catch e
         throw new Error "Failed to connect #{e.message}"
       @room_ids = []
       options.rooms.split(',').forEach (room_id) =>
         @room_ids.push room_id
+        
       @robot.logger.debug "Completed adding rooms to list"
      else
        throw new Error "Not enough parameters provided. I need an access token"
@@ -104,7 +104,6 @@ class SparkRealtime extends EventEmitter
         max: '15')
       @robot.logger.debug "Set callback for #{room_id}"
       listMsges.on 'messages', (msges) ->
-        @robot.logger.debug "Caught message"
         callback msges room_id
     @robot.logger.debug "Finished listener callbacks"
  
