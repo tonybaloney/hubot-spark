@@ -59,8 +59,12 @@ class SparkAdapter extends Adapter
         if room_id in bot.room_ids
           text = message.text
           user_name = message.personEmail
-          @robot.logger.info "received #{text} from #{user_name}"
-          @robot.receive new TextMessage user_name, text
+          user =
+              name: message.personEmail
+              id: message.personId
+              room: message.roomId
+          @robot.logger.info "received #{text} from #{user.name}"
+          @robot.receive new TextMessage user, text
         else
           @robot.logger.info "received #{text} from #{room_id} but not a room we listen to."
     @robot.logger.debug "Done with custom bot logic"
