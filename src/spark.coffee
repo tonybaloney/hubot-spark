@@ -20,7 +20,7 @@ TextMessage = require('hubot').TextMessage
 
 HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
-Spark       = require('../../csco-spark')
+Spark       = require('csco-spark')
 
 class SparkAdapter extends Adapter
   constructor: (robot) ->
