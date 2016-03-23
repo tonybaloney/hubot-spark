@@ -20,7 +20,7 @@ TextMessage = require('hubot').TextMessage
 
 HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
-Spark       = require('csco-spark')
+Spark       = require('../../csco-spark')
 
 class SparkAdapter extends Adapter
   constructor: (robot) ->
@@ -52,7 +52,7 @@ class SparkAdapter extends Adapter
      rooms      : process.env.HUBOT_SPARK_ROOMS
     bot = new SparkRealtime(options, @robot)
     @robot.logger.debug "Created bot, setting up listeners"
-    bot.listen (messages, room_id) =>
+    bot.listen new Date().toISOString(), (messages, room_id, last_date) =>
       @robot.logger.debug "Fired listener callback for #{room_id}"
       messages.forEach (message) =>
         # checking message is received from valid group
@@ -93,18 +93,20 @@ class SparkRealtime extends EventEmitter
        throw new Error "Not enough parameters provided. I need an access token"
  
   ## Spark API call methods
-  listen: (callback) ->
-    @robot.logger.debug "Creating callbacks"
+  listen: (date, callback) ->
+    @robot.logger.debug "Creating callbacks from #{date}"
     # Create a callback hook for each room
     @room_ids.forEach (room_id) =>
       @robot.logger.debug "Creating callback for #{room_id}"
-      listMsges = @spark.listItemEvt(
-        item: 'messages'
-        roomId: room_id
-        max: '1')
-      @robot.logger.debug "Set callback for #{room_id}"
-      listMsges.on 'messages', (msges) ->
+      @spark.getMessages(roomId: room_id, after: date).then (msges) =>
         callback msges, room_id
+        @robot.logger.debug "That's all folks!"
+        setTimeout (=>
+          @listen new Date().toISOString(), callback
+          return
+        ), 10000
+    
+
     @robot.logger.debug "Finished listener callbacks"
  
   send: (user, message, room) ->
