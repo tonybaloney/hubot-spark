@@ -94,13 +94,13 @@ class SparkRealtime extends EventEmitter
  
   ## Spark API call methods
   listen: (date, callback) ->
-    @robot.logger.debug "Creating callbacks from #{date}"
     # Create a callback hook for each room
     @room_ids.forEach (room_id) =>
-      @robot.logger.debug "Creating callback for #{room_id}"
       @spark.getMessages(roomId: room_id, after: date).then (msges) =>
-        callback msges, room_id
-        @robot.logger.debug "That's all folks!"
+        msges.forEach((msg) =>
+          if Date.parse(msg.created) > Date.parse(date)
+            callback [msg], room_id
+        )
         setTimeout (=>
           @listen new Date().toISOString(), callback
           return
