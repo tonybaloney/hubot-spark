@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/tonybaloney/hubot-spark.svg?branch=master)](https://travis-ci.org/tonybaloney/hubot-spark)
 
+[![npm version](https://badge.fury.io/js/hubot-spark.svg)](https://badge.fury.io/js/hubot-spark)
+
 ## Description
 
 This is the [Cisco Spark](https://developer.ciscospark.com) adapter for [Hubot](https://github.com/github/hubot) that allows communication in Spark channels.
