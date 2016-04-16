@@ -114,8 +114,9 @@ class SparkRealtime extends EventEmitter
   send: (user, message, room) ->
     @robot.logger.debug "Sending message"
     files = undefined
-    if message.indexOf('http://') > -1
-      files = message
+    if message.indexOf('attach:') > -1
+      files = message.replace('attach:','')
+      message = files
     @room_ids.forEach (room_id) =>
       @robot.logger.info "send message to room #{room_id} with text #{message}"
       @spark.sendMessage
