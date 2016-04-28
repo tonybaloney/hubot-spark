@@ -63,10 +63,10 @@ class SparkAdapter extends Adapter
               name: message.personEmail
               id: message.personId
               room: message.roomId
-          @robot.logger.info "received #{text} from #{user.name}"
+          @robot.logger.debug "received #{text} from #{user.name}"
           @robot.receive new TextMessage user, text
         else
-          @robot.logger.info "received #{text} from #{room_id} but not a room we listen to."
+          @robot.logger.debug "received #{text} from #{room_id} but not a room we listen to."
     @robot.logger.debug "Done with custom bot logic"
     @bot = bot
     @emit 'connected'
@@ -81,11 +81,11 @@ class SparkRealtime extends EventEmitter
     if options.access_token?
       @robot = robot
       try
-        @robot.logger.debug "Trying connection to #{options.api_uri}"
+        @robot.logger.info "Trying connection to #{options.api_uri}"
         @spark = Spark
           uri: options.api_uri
           token: options.access_token
-        @robot.logger.debug "Created connection instance to spark"
+        @robot.logger.info "Created connection instance to spark"
       catch e
         throw new Error "Failed to connect #{e.message}"
       @room_ids = []
@@ -103,7 +103,7 @@ class SparkRealtime extends EventEmitter
       @spark.getMessages(roomId: room_id).then (msges) =>
         msges.forEach((msg) =>
           if Date.parse(msg.created) > Date.parse(date)
-            @robot.logger.info "Matched new message #{msg.text}"
+            @robot.logger.debug "Matched new message #{msg.text}"
             callback [msg], room_id
         )
         newDate = new Date().toISOString()
@@ -114,7 +114,7 @@ class SparkRealtime extends EventEmitter
   send: (user, message, room) ->
     @robot.logger.debug "Sending message"
     @room_ids.forEach (room_id) =>
-      @robot.logger.info "send message to room #{room_id} with text #{message}"
+      @robot.logger.debug "send message to room #{room_id} with text #{message}"
       @spark.sendMessage
         roomId: room_id
         text: message
@@ -122,7 +122,7 @@ class SparkRealtime extends EventEmitter
   reply: (user, message) ->
     @robot.logger.debug "Replying to message for #{user}"
     if user
-      @robot.logger.info "reply message to #{user} with text #{message}"
+      @robot.logger.debug "reply message to #{user} with text #{message}"
       @spark.sendMessage
         text: message
         toPersonEmail: user
