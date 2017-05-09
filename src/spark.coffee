@@ -14,13 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ///
 
-Robot   = require('hubot').Robot
 Adapter = require('hubot').Adapter
 TextMessage = require('hubot').TextMessage
 
-HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
-Spark       = require('csco-spark')
+SparkApi = require('./spark-api')
 
 class SparkAdapter extends Adapter
   constructor: (robot) ->
@@ -77,12 +75,13 @@ exports.use = (robot) ->
 class SparkRealtime extends EventEmitter
   self = @
   room_ids = []
+
   constructor: (options, robot) ->
     if options.access_token?
       @robot = robot
       try
         @robot.logger.info "Trying connection to #{options.api_uri}"
-        @spark = Spark
+        @spark = new SparkApi
           uri: options.api_uri
           token: options.access_token
         @robot.logger.info "Created connection instance to spark"
