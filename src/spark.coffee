@@ -30,13 +30,13 @@ class SparkAdapter extends Adapter
     strings.forEach (str) =>
       @prepare_string str, (message) =>
         @bot.send user, message
- 
+
   reply: (envelope, strings...) ->
     user = if envelope.user then envelope.user else envelope
     strings.forEach (str) =>
       @prepare_string str,(message) =>
         @bot.reply user, message
- 
+
   prepare_string: (str, callback) ->
     text = str
     messages = [str]
@@ -111,13 +111,13 @@ class SparkRealtime extends EventEmitter
       setTimeout (=>
         @listen roomId, newDate, callback
       ), 10000
- 
+
   send: (user, message) ->
     @robot.logger.debug "Send message to room #{user.room} with text #{message}"
     spark.sendMessage
       roomId: user.room
       text: message
- 
+
   reply: (user, message) ->
     @robot.logger.debug "Replying to message for #{user}"
     if user
