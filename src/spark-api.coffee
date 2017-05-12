@@ -8,6 +8,7 @@ class SparkApi
     @token = @sparkOptions.token
 
     process.env['CISCOSPARK_ACCESS_TOKEN'] = @token
+    process.env['HYDRA_SERVICE_URL'] = @uri
     spark = require('ciscospark')
 
   init: () ->
