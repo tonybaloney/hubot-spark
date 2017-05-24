@@ -27,6 +27,7 @@ class SparkAdapter extends Adapter
 
   send: (envelope, strings...) ->
     user = if envelope.user then envelope.user else envelope
+    user.extra = envelope.extra
     strings.forEach (str) =>
       @prepare_string str, (message) =>
         @bot.send user, message
@@ -113,10 +114,16 @@ class SparkRealtime extends EventEmitter
       ), 10000
 
   send: (user, message) ->
-    @robot.logger.debug "Send message to room #{user.room} with text #{message}"
-    spark.sendMessage
-      roomId: user.room
-      text: message
+    @robot.logger.debug "Send message #{user} to room #{user.room} with text #{message}"
+    if user.extra and user.extra.files
+      spark.sendMessage
+        roomId: user.room
+        markdown: message
+        files: user.extra.files
+    else
+      spark.sendMessage
+        roomId: user.room
+        markdown: message
 
   reply: (user, message) ->
     @robot.logger.debug "Replying to message for #{user}"
@@ -128,4 +135,3 @@ class SparkRealtime extends EventEmitter
 
 exports.use = (robot) ->
   new SparkAdapter robot
-
