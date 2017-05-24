@@ -27,7 +27,6 @@ class SparkAdapter extends Adapter
 
   send: (envelope, strings...) ->
     user = if envelope.user then envelope.user else envelope
-    user.extra = envelope.extra
     strings.forEach (str) =>
       @prepare_string str, (message) =>
         @bot.send user, message
@@ -112,17 +111,16 @@ class SparkRealtime extends EventEmitter
       setTimeout (=>
         @listen roomId, newDate, callback
       ), 10000
-
   send: (user, message) ->
-    @robot.logger.debug "Send message #{user} to room #{user.room} with text #{message}"
-    if user.extra and user.extra.files
+    @robot.logger.debug "Send message to room #{user.room.channel} with text #{message} and #{user.room.extra}"
+    if user.room.extra and user.room.extra.files
       spark.sendMessage
-        roomId: user.room
-        markdown: message
-        files: user.extra.files
+        roomId: user.room.channel
+        text: message
+        files: user.room.extra.files
     else
       spark.sendMessage
-        roomId: user.room
+        roomId: user.room.channel
         markdown: message
 
   reply: (user, message) ->
