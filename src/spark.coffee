@@ -128,4 +128,3 @@ class SparkRealtime extends EventEmitter
 
 exports.use = (robot) ->
   new SparkAdapter robot
-
