@@ -47,6 +47,7 @@ class SparkAdapter extends Adapter
     self = @
     options =
      api_uri: process.env.HUBOT_SPARK_API_URI or "https://api.ciscospark.com/v1"
+     refresh: process.env.HUBOT_SPARK_REFRESH or 10000
      access_token: process.env.HUBOT_SPARK_ACCESS_TOKEN
      rooms      : process.env.HUBOT_SPARK_ROOMS
 
@@ -79,6 +80,7 @@ class SparkRealtime extends EventEmitter
     @room_ids = []
     if not options.access_token?
       throw new Error "Not enough parameters provided. I need an access token"
+    @refresh = parseInt(options.refresh)
 
   init: (options, robot) ->
     @robot = robot
@@ -110,7 +112,7 @@ class SparkRealtime extends EventEmitter
       newDate = new Date().toISOString()
       setTimeout (=>
         @listen roomId, newDate, callback
-      ), 10000
+      ), @refresh
 
   send: (user, message) ->
     @robot.logger.debug "Send message to room #{user.room} with text #{message}"
