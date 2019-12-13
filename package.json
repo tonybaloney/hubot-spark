@@ -20,7 +20,7 @@
   "dependencies": {
     "ciscospark": "^0.7.93",
     "hubot": ">=2.3.0",
-    "request": "2.9.3",
+    "request": "2.88.0",
     "bluebird": "^3.5.0"
   },
   "scripts": {
