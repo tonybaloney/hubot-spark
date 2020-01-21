@@ -115,9 +115,10 @@ class SparkRealtime extends EventEmitter
       ), @refresh
 
   send: (user, message) ->
-    @robot.logger.debug "Send message to room #{user.room} with text #{message}"
+    @robot.logger.debug user
+    @robot.logger.debug "Send message to room #{user.room.user} with text #{message}"
     spark.sendMessage
-      roomId: user.room
+      roomId: user.room.user
       text: message
 
   reply: (user, message) ->
