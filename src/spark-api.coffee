@@ -19,7 +19,7 @@ class SparkApi
 
 
   init: () ->
-    webex.people.get({id: 'me'}).then((response) ->
+    webex.people.get('me').then((response) ->
       person = response
     )
 

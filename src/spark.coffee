@@ -26,7 +26,7 @@ class SparkAdapter extends Adapter
     super
 
   send: (envelope, strings...) ->
-    user = if envelope.user then envelope.user else envelope
+    user = if envelope.user then envelope.user else envelope.room
     strings.forEach (str) =>
       @prepare_string str, (message) =>
         @bot.send user, message
@@ -62,8 +62,9 @@ class SparkAdapter extends Adapter
             user =
               name: message.personEmail
               id: message.personId
-              room: message.roomId
+              roomId: message.roomId
             self.robot.logger.debug "Received #{text} from #{user.name}"
+            # self.robot.send user, text
             self.robot.receive new TextMessage user, text
       )
       self.robot.logger.debug "Done with custom bot logic"
@@ -107,6 +108,12 @@ class SparkRealtime extends EventEmitter
       msges.forEach((msg) =>
         if Date.parse(msg.created) > Date.parse(date)
           @robot.logger.debug "Matched new message #{msg.text}"
+          text = msg.text
+          @robot.logger.debug "Received message #{text}"
+          text = text.replace "stackstorm-bot ", ""
+          msg.text = text
+          @robot.logger.debug "Updated message #{text}"
+          @robot.logger.debug "Message Object #{msg}"
           callback [msg], roomId
       )
       newDate = new Date().toISOString()
@@ -116,9 +123,9 @@ class SparkRealtime extends EventEmitter
 
   send: (user, message) ->
     @robot.logger.debug user
-    @robot.logger.debug "Send message to room #{user.room.user} with text #{message}"
+    @robot.logger.debug "Send message to room #{user.roomId} with text #{message}"
     spark.sendMessage
-      roomId: user.room.user
+      roomId: user.roomId
       text: message
 
   reply: (user, message) ->
