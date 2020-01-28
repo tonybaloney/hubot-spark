@@ -39,5 +39,11 @@ class SparkApi
 
   sendMessage: (options) ->
     webex.messages.create(options)
+  
+  getRooms: (options) ->
+    webex.rooms.list(options).then((rooms) ->
+      rooms.items
+    )
+
 
 module.exports = SparkApi
