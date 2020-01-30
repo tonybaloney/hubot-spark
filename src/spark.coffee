@@ -91,33 +91,45 @@ class SparkRealtime extends EventEmitter
       uri: options.api_uri
       token: options.access_token
     
-    spark.init().then(() ->
+    return spark.init().then(() ->
       logger.debug "Connected as a bot? #{spark.isBot()}"
       logger.info "Created connection instance to Spark"
       roomIds = []
-      logger.debug "Getting rooms of the bot user"
-      return spark.getRooms({}).then((rooms) ->
-        logger.info "Got %s rooms", rooms.length
-        rooms.forEach((room) => 
-          if room.type == "group"
-            roomIds.push room.id
-        )
-        Bluebird.resolve(roomIds)
-      ).catch((err) ->
-        logger.info "Failed to get rooms list from API"
-        options.rooms.split(',').forEach (roomId) =>
-          roomIds.push roomId
-        Bluebird.resolve(roomIds)
-      )
+      options.rooms.split(',').forEach (roomId) =>
+        roomIds.push roomId
       logger.debug "Completed adding rooms to list"
+      Bluebird.resolve(roomIds)
     ).catch((err) ->
       throw new Error "Failed to connect to Spark: #{err}"
     )
+    
+    # spark.init().then(() ->
+    #   logger.debug "Connected as a bot? #{spark.isBot()}"
+    #   logger.info "Created connection instance to Spark"
+    #   roomIds = []
+    #   logger.debug "Getting rooms of the bot user"
+    #   return spark.getRooms({}).then((rooms) ->
+    #     logger.info "Got %s rooms", rooms.length
+    #     rooms.forEach((room) => 
+    #       if room.type == "group"
+    #         roomIds.push room.id
+    #     )
+    #     Bluebird.resolve(roomIds)
+    #   ).catch((err) ->
+    #     logger.info "Failed to get rooms list from API"
+    #     options.rooms.split(',').forEach (roomId) =>
+    #       roomIds.push roomId
+    #     Bluebird.resolve(roomIds)
+    #   )
+    #   logger.debug "Completed adding rooms to list"
+    # ).catch((err) ->
+    #   throw new Error "Failed to connect to Spark: #{err}"
+    # )
 
   ## Spark API call methods
   listen: (roomId, date, callback) ->
     newDate = new Date().toISOString()
-    spark.getMessages(roomId: roomId).then ((msges) ->
+    spark.getMessages(roomId: roomId).then((msges) =>
       @robot.logger.debug "Messages recived: ", msges.length
       msges.forEach((msg) =>
         if Date.parse(msg.created) > Date.parse(date)
@@ -125,8 +137,8 @@ class SparkRealtime extends EventEmitter
           @robot.logger.debug "Message Object: ", msg
           callback [msg], roomId
       )
-    ).catch((err) ->
-      @robot.logger.debug "There was an error while getting messages "
+    ).catch((err) =>
+      @robot.logger.debug "There was an error while getting messages for roomId #{roomId}"
     ) 
     setTimeout (=>
       @listen roomId, newDate, callback
