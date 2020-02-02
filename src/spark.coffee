@@ -102,29 +102,6 @@ class SparkRealtime extends EventEmitter
     ).catch((err) ->
       throw new Error "Failed to connect to Spark: #{err}"
     )
-    
-    # spark.init().then(() ->
-    #   logger.debug "Connected as a bot? #{spark.isBot()}"
-    #   logger.info "Created connection instance to Spark"
-    #   roomIds = []
-    #   logger.debug "Getting rooms of the bot user"
-    #   return spark.getRooms({}).then((rooms) ->
-    #     logger.info "Got %s rooms", rooms.length
-    #     rooms.forEach((room) => 
-    #       if room.type == "group"
-    #         roomIds.push room.id
-    #     )
-    #     Bluebird.resolve(roomIds)
-    #   ).catch((err) ->
-    #     logger.info "Failed to get rooms list from API"
-    #     options.rooms.split(',').forEach (roomId) =>
-    #       roomIds.push roomId
-    #     Bluebird.resolve(roomIds)
-    #   )
-    #   logger.debug "Completed adding rooms to list"
-    # ).catch((err) ->
-    #   throw new Error "Failed to connect to Spark: #{err}"
-    # )
 
   ## Spark API call methods
   listen: (roomId, date, callback) ->
@@ -139,6 +116,7 @@ class SparkRealtime extends EventEmitter
       )
     ).catch((err) =>
       @robot.logger.debug "There was an error while getting messages for roomId #{roomId}"
+      newDate = date
     ) 
     setTimeout (=>
       @listen roomId, newDate, callback
