@@ -1,4 +1,6 @@
-spark = undefined
+
+Webex = require('webex')
+webex = undefined
 
 class SparkApi
   person = undefined
@@ -9,10 +11,15 @@ class SparkApi
 
     process.env['CISCOSPARK_ACCESS_TOKEN'] = @token
     process.env['HYDRA_SERVICE_URL'] = @uri
-    spark = require('ciscospark')
+    webex = Webex.init({
+      credentials: {
+        access_token: @token
+      }
+    })
+
 
   init: () ->
-    spark.people.get({id: 'me'}).then((response) ->
+    webex.people.get('me').then((response) ->
       person = response
     )
 
@@ -26,11 +33,17 @@ class SparkApi
     if @isBot()
       options.mentionedPeople = 'me'
       options.max = 100
-    spark.messages.list(options).then((messages) ->
+    webex.messages.list(options).then((messages) ->
       messages.items
     )
 
   sendMessage: (options) ->
-    spark.messages.create(options)
+    webex.messages.create(options)
+  
+  getRooms: (options) ->
+    webex.rooms.list(options).then((rooms) ->
+      rooms.items
+    )
+
 
 module.exports = SparkApi

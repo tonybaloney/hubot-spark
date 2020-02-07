@@ -26,7 +26,7 @@ class SparkAdapter extends Adapter
     super
 
   send: (envelope, strings...) ->
-    user = if envelope.user then envelope.user else envelope
+    user = if envelope.user then envelope.user else envelope.room
     strings.forEach (str) =>
       @prepare_string str, (message) =>
         @bot.send user, message
@@ -62,8 +62,9 @@ class SparkAdapter extends Adapter
             user =
               name: message.personEmail
               id: message.personId
-              room: message.roomId
+              roomId: message.roomId
             self.robot.logger.debug "Received #{text} from #{user.name}"
+            # self.robot.send user, text
             self.robot.receive new TextMessage user, text
       )
       self.robot.logger.debug "Done with custom bot logic"
@@ -89,6 +90,7 @@ class SparkRealtime extends EventEmitter
     spark = new SparkApi
       uri: options.api_uri
       token: options.access_token
+    
     return spark.init().then(() ->
       logger.debug "Connected as a bot? #{spark.isBot()}"
       logger.info "Created connection instance to Spark"
@@ -103,21 +105,28 @@ class SparkRealtime extends EventEmitter
 
   ## Spark API call methods
   listen: (roomId, date, callback) ->
-    spark.getMessages(roomId: roomId).then (msges) =>
+    newDate = new Date().toISOString()
+    spark.getMessages(roomId: roomId).then((msges) =>
+      @robot.logger.debug "Messages recived: ", msges.length
       msges.forEach((msg) =>
         if Date.parse(msg.created) > Date.parse(date)
           @robot.logger.debug "Matched new message #{msg.text}"
+          @robot.logger.debug "Message Object: ", msg
           callback [msg], roomId
       )
-      newDate = new Date().toISOString()
-      setTimeout (=>
-        @listen roomId, newDate, callback
-      ), @refresh
+    ).catch((err) =>
+      @robot.logger.debug "There was an error while getting messages for roomId #{roomId}"
+      newDate = date
+    ) 
+    setTimeout (=>
+      @listen roomId, newDate, callback
+    ), @refresh
 
   send: (user, message) ->
-    @robot.logger.debug "Send message to room #{user.room} with text #{message}"
+    @robot.logger.debug user
+    @robot.logger.debug "Send message to room #{user.roomId} with text #{message}"
     spark.sendMessage
-      roomId: user.room
+      roomId: user.roomId
       text: message
 
   reply: (user, message) ->

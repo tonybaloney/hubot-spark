@@ -6,19 +6,17 @@
     "github hubot cisco spark adapter"
   ],
   "description": "A Cisco Spark adapter for hubot",
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "http://github.com/tonybaloney/hubot-spark/raw/master/LICENSE"
-    }
-  ],
+  "licenses": [{
+    "type": "Apache-2.0",
+    "url": "http://github.com/tonybaloney/hubot-spark/raw/master/LICENSE"
+  }],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/tonybaloney/hubot-spark.git"
   },
   "dependencies": {
-    "ciscospark": "^0.7.93",
+    "webex": "^1.80.85",
     "hubot": ">=2.3.0",
     "request": "2.9.3",
     "bluebird": "^3.5.0"
